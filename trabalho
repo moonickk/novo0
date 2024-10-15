@@ -1,0 +1,330 @@
+quiz-educacional
+├── public
+│   ├── css
+│   │   └── styles.css
+│   ├── js
+│   │   └── main.js
+│   └── index.html
+├── server.js
+├── package.json
+└── README.md
+{
+  "name": "quiz-educacional",
+  "version": "1.0.0",
+  "description": "Um site de perguntas e respostas para escolas",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "body-parser": "^1.19.0"
+  }
+}
+const express = require('express');
+const path = require('path');
+const app = express();
+const bodyParser = require('body-parser');
+
+app.use(bodyParser.json());
+app.use(express.static('public'));
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+let perguntas = [
+  {
+    pergunta: "Qual é a capital da França?",
+    alternativas: ["Paris", "Londres", "Berlim", "Madri"],
+    correta: "Paris"
+  },
+  {
+    pergunta: "Qual é o maior planeta do Sistema Solar?",
+    alternativas: ["Terra", "Júpiter", "Marte", "Vênus"],
+    correta: "Júpiter"
+  }
+];
+
+// Endpoint para obter as perguntas
+app.get('/api/perguntas', (req, res) => {
+  res.json(perguntas);
+});
+
+app.listen(3000, () => {
+  console.log('Servidor rodando na porta 3000');
+});
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Educacional</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="quiz-container">
+    <h1>Jogo de Perguntas e Respostas</h1>
+    <div id="pergunta-container">
+      <h2 id="pergunta"></h2>
+      <div id="alternativas"></div>
+    </div>
+    <button id="next-button" style="display:none;">Próxima Pergunta</button>
+    <div id="resultado" style="display:none;">
+      <h2>Fim do Quiz!</h2>
+      <p id="score"></p>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
+}
+
+#quiz-container {
+  margin: 50px auto;
+  width: 60%;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+button {
+  padding: 10px 20px;
+  margin-top: 20px;
+  background-color: #007BFF;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+#alternativas div {
+  margin: 10px 0;
+  cursor: pointer;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#alternativas div:hover {
+  background-color: #e9ecef;
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const perguntaContainer = document.getElementById('pergunta');
+  const alternativasContainer = document.getElementById('alternativas');
+  const nextButton = document.getElementById('next-button');
+  const resultadoContainer = document.getElementById('resultado');
+  const scoreDisplay = document.getElementById('score');
+
+  let perguntas;
+  let perguntaAtual = 0;
+  let score = 0;
+
+  // Carregar perguntas do servidor
+  fetch('/api/perguntas')
+    .then(response => response.json())
+    .then(data => {
+      perguntas = data;
+      mostrarPergunta();
+    });
+
+  function mostrarPergunta() {
+    limparAlternativas();
+    const pergunta = perguntas[perguntaAtual];
+    perguntaContainer.textContent = pergunta.pergunta;
+    
+    pergunta.alternativas.forEach(alternativa => {
+      const altDiv = document.createElement('div');
+      altDiv.textContent = alternativa;
+      altDiv.addEventListener('click', () => verificarResposta(alternativa));
+      alternativasContainer.appendChild(altDiv);
+    });
+  }
+
+  function verificarResposta(resposta) {
+    const pergunta = perguntas[perguntaAtual];
+    if (resposta === pergunta.correta) {
+      score++;
+    }
+    perguntaAtual++;
+    if (perguntaAtual < perguntas.length) {
+      nextButton.style.display = 'block';
+      nextButton.addEventListener('click', mostrarPergunta);
+    } else {
+      mostrarResultado();
+    }
+  }
+
+  function mostrarResultado() {
+    perguntaContainer.style.display = 'none';
+    alternativasContainer.style.display = 'none';
+    nextButton.style.display = 'none';
+    resultadoContainer.style.display = 'block';
+    scoreDisplay.textContent = `Você acertou ${score} de ${perguntas.length} perguntas!`;
+  }
+
+  function limparAlternativas() {
+    alternativasContainer.innerHTML = '';
+    nextButton.style.display = 'none';
+  }
+});
+git init
+git add .
+git commit -m "Primeira versão do quiz escolar"
+git remote add origin https://github.com/seu-usuario/seu-repositorio.git
+git push -u origin master
+let perguntas = {
+  facil: [
+    { pergunta: "Quanto é 2 + 2?", alternativas: ["3", "4", "5", "6"], correta: "4" },
+    { pergunta: "Qual cor é o céu?", alternativas: ["Azul", "Verde", "Amarelo", "Vermelho"], correta: "Azul" }
+  ],
+  medio: [
+    { pergunta: "Quantos continentes existem no mundo?", alternativas: ["5", "6", "7", "8"], correta: "7" },
+    { pergunta: "Qual é o maior oceano?", alternativas: ["Atlântico", "Pacífico", "Índico", "Ártico"], correta: "Pacífico" }
+  ],
+  dificil: [
+    { pergunta: "Qual é o elemento químico com símbolo Fe?", alternativas: ["Ferro", "Fósforo", "Flúor", "Francium"], correta: "Ferro" },
+    { pergunta: "Quem descobriu a Teoria da Relatividade?", alternativas: ["Isaac Newton", "Albert Einstein", "Galileu Galilei", "Stephen Hawking"], correta: "Albert Einstein" }
+  ]
+};
+
+app.get('/api/perguntas/:nivel', (req, res) => {
+  const nivel = req.params.nivel;
+  res.json(perguntas[nivel]);
+});
+<div id="nivel-container">
+  <h2>Escolha o Nível de Dificuldade</h2>
+  <button data-nivel="facil">Fácil</button>
+  <button data-nivel="medio">Médio</button>
+  <button data-nivel="dificil">Difícil</button>
+</div>
+document.addEventListener('DOMContentLoaded', () => {
+  const nivelContainer = document.getElementById('nivel-container');
+  const perguntaContainer = document.getElementById('pergunta-container');
+  const alternativasContainer = document.getElementById('alternativas');
+  const nextButton = document.getElementById('next-button');
+  const resultadoContainer = document.getElementById('resultado');
+  const scoreDisplay = document.getElementById('score');
+
+  let perguntas;
+  let perguntaAtual = 0;
+  let score = 0;
+
+  // Escolher o nível de dificuldade
+  document.querySelectorAll('[data-nivel]').forEach(button => {
+    button.addEventListener('click', () => {
+      const nivel = button.getAttribute('data-nivel');
+      fetch(`/api/perguntas/${nivel}`)
+        .then(response => response.json())
+        .then(data => {
+          perguntas = data;
+          nivelContainer.style.display = 'none';
+          mostrarPergunta();
+        });
+    });
+  });
+
+  function mostrarPergunta() {
+    limparAlternativas();
+    perguntaContainer.style.display = 'block';
+    const pergunta = perguntas[perguntaAtual];
+    perguntaContainer.textContent = pergunta.pergunta;
+    
+    pergunta.alternativas.forEach(alternativa => {
+      const altDiv = document.createElement('div');
+      altDiv.textContent = alternativa;
+      altDiv.addEventListener('click', () => verificarResposta(alternativa));
+      alternativasContainer.appendChild(altDiv);
+    });
+  }
+
+  // ... restante do código
+});
+let timer;
+let tempoRestante = 10; // 10 segundos para cada pergunta
+const timerDisplay = document.createElement('div');
+timerDisplay.id = 'timer';
+perguntaContainer.appendChild(timerDisplay);
+
+function iniciarTemporizador() {
+  tempoRestante = 10;
+  timerDisplay.textContent = `Tempo restante: ${tempoRestante}s`;
+
+  timer = setInterval(() => {
+    tempoRestante--;
+    timerDisplay.textContent = `Tempo restante: ${tempoRestante}s`;
+    if (tempoRestante === 0) {
+      clearInterval(timer);
+      verificarResposta(null); // Se o jogador não responder, passa para a próxima pergunta
+    }
+  }, 1000);
+}
+
+function mostrarPergunta() {
+  limparAlternativas();
+  iniciarTemporizador();
+  // ... resto da função
+}
+#timer {
+  font-size: 1.2rem;
+  margin: 10px 0;
+  color: red;
+}
+let ranking = [];
+
+app.post('/api/ranking', (req, res) => {
+  const { nome, pontos } = req.body;
+  ranking.push({ nome, pontos });
+  ranking.sort((a, b) => b.pontos - a.pontos); // Ordenar por pontos
+  res.json(ranking);
+});
+
+app.get('/api/ranking', (req, res) => {
+  res.json(ranking);
+});
+<div id="ranking-container" style="display:none;">
+  <h2>Ranking</h2>
+  <ol id="ranking-list"></ol>
+</div>
+function mostrarResultado() {
+  perguntaContainer.style.display = 'none';
+  alternativasContainer.style.display = 'none';
+  nextButton.style.display = 'none';
+  resultadoContainer.style.display = 'block';
+  scoreDisplay.textContent = `Você acertou ${score} de ${perguntas.length} perguntas!`;
+
+  const nome = prompt("Digite seu nome para salvar no ranking:");
+  fetch('/api/ranking', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ nome, pontos: score })
+  })
+  .then(response => response.json())
+  .then(data => mostrarRanking(data));
+}
+
+function mostrarRanking(ranking) {
+  const rankingContainer = document.getElementById('ranking-container');
+  const rankingList = document.getElementById('ranking-list');
+  rankingList.innerHTML = '';
+  ranking.forEach(item => {
+    const li = document.createElement('li');
+    li.textContent = `${item.nome}: ${item.pontos} pontos`;
+    rankingList.appendChild(li);
+  });
+  rankingContainer.style.display = 'block';
+}
